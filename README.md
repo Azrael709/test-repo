@@ -866,3 +866,266 @@ public class Book {
 
 * 帮你把这一套知识点再 **出一份中英双语小测题**，
 * 或者针对你觉得最不熟的部分（比如 `instanceof` + casting / UML 关系）单独整理一页“超速记忆卡”。
+
+
+我直接用 **“一段英文 + 一段中文”** 的方式来讲，这样你也可以顺便练英文 😊
+
+---
+
+## 1. What is an abstract class?
+
+### 1.1 English
+
+An **abstract class** is a class that **cannot be instantiated** (you cannot do `new Animal()` if `Animal` is abstract).
+It is used to represent a **general concept** and to **share common code** for its subclasses.
+
+Key points:
+
+* Declared with the keyword `abstract`.
+* Can have:
+
+  * **abstract methods** (no body, must be overridden by subclasses)
+  * **normal methods** (with method body)
+  * fields (instance variables), constructors, etc.
+* Subclasses `extend` the abstract class and **inherit code**.
+
+Example:
+
+```java
+public abstract class Animal {
+    protected String name;
+
+    public Animal(String name) {
+        this.name = name;
+    }
+
+    // abstract method: no body
+    public abstract void makeSound();
+
+    // normal method: has body
+    public void sleep() {
+        System.out.println(name + " is sleeping");
+    }
+}
+
+public class Dog extends Animal {
+
+    public Dog(String name) {
+        super(name);   // call abstract class constructor
+    }
+
+    @Override
+    public void makeSound() {
+        System.out.println("Woof!");
+    }
+}
+```
+
+You can’t do:
+
+```java
+Animal a = new Animal("xx"); // ❌ error: Animal is abstract
+```
+
+But you can:
+
+```java
+Animal a = new Dog("Buddy");  // ✅ OK (polymorphism)
+a.makeSound();                // Woof!
+a.sleep();                    // Buddy is sleeping
+```
+
+---
+
+### 1.2 中文解释
+
+**抽象类（abstract class）** 是一种 **不能直接创建对象** 的类（如果 `Animal` 是抽象类，就不能写 `new Animal()`）。
+它用来表示 **一个比较抽象的概念**，并且为子类 **提供公共的代码**（字段、普通方法、构造方法等）。
+
+重点：
+
+* 用 `abstract` 关键字声明。
+* 可以包含：
+
+  * **抽象方法**（只有方法名，没有方法体；子类必须重写）
+  * **普通方法**（有方法体，可以直接用）
+  * 成员变量、构造方法等。
+* 子类通过 `extends` 继承抽象类，并可以 **复用/重写** 其中的代码。
+
+上面例子中：
+
+* `Animal` 是抽象类，有一个抽象方法 `makeSound()`，还有一个普通方法 `sleep()`。
+* `Dog` 继承 `Animal`，必须重写 `makeSound()`，可以直接使用 `sleep()`。
+* 抽象类 **不能 new**，但是可以作为 **引用类型**，指向子类对象：`Animal a = new Dog("Buddy");`。
+
+---
+
+## 2. What is an interface?
+
+### 2.1 English
+
+An **interface** is a type that specifies **what a class can do**, but not (traditionally) how it does it.
+It is like a **contract**: any class that `implements` the interface must provide implementations for its methods.
+
+Key points (Java 8+):
+
+* Declared with `interface`.
+* Methods are **implicitly public and abstract**, unless they are default/static methods.
+* Can contain:
+
+  * abstract methods
+  * `default` methods (with body)
+  * `static` methods
+  * constants (`public static final` fields)
+* A class `implements` an interface.
+* A class can implement **multiple interfaces** (supports multiple inheritance of type).
+
+Example (similar to your labs with `INoise`, `IProductionAnimal`):
+
+```java
+public interface INoise {
+    String makeNoise();   // implicitly public abstract
+}
+
+public class Cat implements INoise {
+
+    @Override
+    public String makeNoise() {
+        return "Meow";
+    }
+}
+
+public class Dog implements INoise {
+
+    @Override
+    public String makeNoise() {
+        return "Woof";
+    }
+}
+```
+
+Usage:
+
+```java
+INoise n1 = new Cat();
+INoise n2 = new Dog();
+
+System.out.println(n1.makeNoise()); // Meow
+System.out.println(n2.makeNoise()); // Woof
+```
+
+Here, `INoise` gives a **capability**: “this object can make noise”.
+
+---
+
+### 2.2 中文解释
+
+**接口（interface）** 是一种只定义 **“能做什么”**，不关心 **“怎么做”** 的类型。
+可以理解为一个 **“规范 / 合同”**：谁实现了这个接口，谁就必须提供这些方法的实现。
+
+重点（Java 8+）：
+
+* 用 `interface` 声明。
+* 方法默认是 **public abstract**（公共的、抽象的），也可以有 `default` / `static` 方法。
+* 可以包含：
+
+  * 抽象方法
+  * `default` 方法（有方法体，可以给统一默认实现）
+  * `static` 方法
+  * 常量（`public static final`）
+* 类通过 `implements` 来 **实现接口**。
+* 一个类可以 **实现多个接口**，所以接口经常用来表达 “某某能力”。
+
+上面例子：
+
+* `INoise` 表示 “会发出声音” 的能力。
+* `Cat` 和 `Dog` 都 `implements INoise`，所以都要实现 `makeNoise()`。
+* 使用时，可以把它们都当作 `INoise` 来用，这是 **多态**。
+
+---
+
+## 3. Abstract class vs Interface – comparison 对比总结
+
+### 3.1 English summary
+
+**Similarities**:
+
+* Both can contain abstract methods.
+* Both support polymorphism (you can use an abstract class or interface as a reference type).
+* Both are used to design OOP structure.
+
+**Differences (classic view):**
+
+| Aspect               | Abstract Class                               | Interface                                     |
+| -------------------- | -------------------------------------------- | --------------------------------------------- |
+| Keyword              | `abstract class`                             | `interface`                                   |
+| Instantiation        | Cannot be instantiated                       | Cannot be instantiated                        |
+| Methods              | Can have abstract & concrete methods         | Mostly abstract methods (plus default/static) |
+| Fields / state       | Can have instance fields (state)             | Typically constants only                      |
+| Inheritance          | `extends` (single inheritance only)          | `implements`, and a class can implement many  |
+| Constructor          | **Yes**, can have constructors               | **No** constructors                           |
+| Relationship meaning | “is-a” base class with shared implementation | “has ability / behavior” (capability / role)  |
+
+---
+
+### 3.2 中文总结
+
+**相同点：**
+
+* 都可以包含抽象方法。
+* 都不能直接创建对象。
+* 都可以作为引用类型，用于多态。
+
+**主要区别（传统理解）：**
+
+| 方面      | 抽象类 (abstract class)           | 接口 (interface)                     |
+| ------- | ------------------------------ | ---------------------------------- |
+| 关键字     | `abstract class`               | `interface`                        |
+| 是否能创建对象 | 不能                             | 不能                                 |
+| 方法      | 可以有 抽象方法 + 普通方法                | 一般是抽象方法，也可以有 `default`、`static` 方法 |
+| 字段 / 状态 | 可以有实例变量（真正的对象状态）               | 通常是常量（`public static final`）       |
+| 继承方式    | 用 `extends`；一个类 **只能继承一个** 抽象类 | 用 `implements`；**可以实现多个接口**        |
+| 构造方法    | 有构造方法，可以给子类复用                  | 没有构造方法                             |
+| 含义      | 表示一种 “是什么” 的父类，带有公共实现          | 表示一种 “能做什么” 的能力/角色                 |
+
+---
+
+## 4. When to use abstract class vs interface?
+
+### 4.1 English
+
+Use **abstract class** when:
+
+* You have a strong **“is-a”** relationship (Dog *is an* Animal).
+* You want to share **common fields and methods** (state + behavior).
+* You need constructors, protected fields, etc.
+
+Use **interface** when:
+
+* You want to define a **capability / role** (INoise, Runnable, Comparable).
+* Different classes from different hierarchies can share this ability (e.g., `Dog`, `Robot`, and `Car` can all implement `IMove`).
+* You need **multiple inheritance of types** (`class A extends B implements C, D...`).
+
+---
+
+### 4.2 中文
+
+适合用 **抽象类** 的情况：
+
+* 存在比较强的 “**是一个**” 关系（Dog 是一种 Animal）。
+* 需要在父类中保存 **共享的属性和方法**（状态 + 行为）。
+* 需要构造方法、`protected` 字段等。
+
+适合用 **接口** 的情况：
+
+* 表达一种 **能力 / 角色**（比如会叫 `INoise`、可以比较大小 `Comparable`）。
+* 不同继承体系的类都可以拥有同一种能力（狗、机器人、汽车都可以“移动”）。
+* 需要 **多实现**（一个类实现多个接口）。
+
+---
+
+如果你愿意，我可以拿你实验里的具体代码（比如 `Animal` 抽象类、`IProductionAnimal` 接口、`INoise` 接口等）逐行标注：
+
+* 哪些是抽象类的特点
+* 哪些是接口的用法
+* 在那里具体体现了“多态” 👍
